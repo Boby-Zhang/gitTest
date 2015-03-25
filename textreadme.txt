@@ -1,4 +1,4 @@
-document git 
+document is only use text git 
 
 git is a version control system
 git is free software.
