@@ -1,0 +1,265 @@
+git学习
+
+git 分布式版本控制
+
+来源：
+http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/0013743256916071d599b3aed534aaab22a0db6c4e07fd0000
+
+
+1.git安装
+  
+2.git congfig
+
+	$ git config --global user.name "your name"
+	$ git config --global user.email "email@example.com"
+	  注意：git config命令的--global参数 ，表示你这台机器上所有的git仓库都会使用这个配置
+ git config --global user.name "boby"
+git config --global user.email "boby@eprotime.com"
+
+3.创建版本库
+
+  	版本库又名仓库repository，就是一个git管理的一个文件目录。
+
+  	$ mkdir learngit
+  	$ cd learngit
+  	$ pwd
+     /Users/boby/learngit
+
+    $ git init  
+       Initialized empty Git repository in /Users/boby/learngit/.git/
+    	通过git init 命令把这个目录变成git可以管理的仓库,其中目录中有隐藏文件 $ ls -a
+    添加文件到仓库：
+    	第一步：使用git add <file> 注意，可反复多次使用，天剑多个文件；
+    	第二步：使用命令 git commit ，完成。
+
+    如：创建文件readme.txt,写入点东西
+    $ git add readme.txt     --->告诉git,把文件添加到仓库
+    $ git commit -m "wrote a readme file"   --->告诉git，把文件提交到仓库
+        说明 -m 后面输入的是本次提交的说明，可以写入对这次的提交说明，对别人很重要得。
+	如： git add file1.txt
+		$ git add file2.txt
+		$ git add file3.txt
+		$ git commit -m "add 3 files."
+
+4.查看工作区域的状态(用于修改的文件提交到仓库)
+
+	$ git status  
+	      告诉你那些文件被修改或没有添加到仓库中。
+
+	$ git diff <file>
+	      未提交前，查看这个文件修改的地方。
+
+	然后直接用git add <file>  git commit -m "xxx"
+
+
+
+
+5.版本回退
+
+
+	git log 
+	      告诉历史详细记录，显示从最近到最远的提交日志
+	     如： $ git log
+			commit 04536532fbeac8efe481f5282f433a75ab68fb96
+			Author: boby <boby@eprotime.com>
+			Date:   Wed Mar 25 15:50:47 2015 +0800
+
+			    add some doc
+
+			commit 541a156f5af9f0cafe59bc13672620ab9d3bb012
+			Author: boby <boby@eprotime.com>
+			Date:   Wed Mar 25 15:39:21 2015 +0800
+
+			    modified this document
+
+			commit e827f2a14a6cce8e77c48320c0f824366d34746d
+			Author: boby <boby@eprotime.com>
+			Date:   Wed Mar 25 15:35:12 2015 +0800
+
+	git log --pretty=oneline
+	      只显示先后提交的日志记录。
+	    如： $  git log --pretty=oneline
+		        3628164fb26d48395383f8f31179f24e0882e1e0 append GPL
+				ea34578d5496d7dd233c827ed32a8cd576c5ee85 add distributed
+				cb926e7ea50ad11b8f9e909c05226233bf755030 wrote a readme file
+
+      注意：一串很长的字符串是版本号（commit id 这是SHA1计算出得）。
+          每提交的版本，实际上git 就会把它们自动串成一条时间线。
+          git可视化管理工具sourceTree中可以清楚地看到提交的历史记录的时间线。
+
+
+    时光穿梭：首先git必须知道当前是哪个版本，git中，用HEAD表示当前版本，也就是最新版本。
+    		上个版本是HEAD^,上上一个版本是HEAD^^ ,往上100个版本是HEAD~100 
+
+    $ git reset --hard HEAD^    ---->返回上个版本
+    $ git log                   -->确认下现在的版本库的状态。
+
+    如果在返回最新的版本。则找到其版本的commit id
+    $ git reset --hard 04536532f     --->版本号不一定写全。
+
+    $ git reflog 
+    	git提供一个git reflog 用来记录你的每一次命令。这样就可以找到你以前的操作了。
+
+	现在总结一下：
+
+	HEAD指向的版本就是当前版本，因此，Git允许我们在版本的历史之间穿梭，使用命令git reset --hard commit_id。
+
+	穿梭前，用git log可以查看提交历史，以便确定要回退到哪个版本。
+
+	要重返未来，用git reflog查看命令历史，以便确定要回到未来的哪个版本。
+
+
+
+
+6.工作区和暂存区
+    
+    工作区（working Directory）：就是你在电脑能看到目录，如现在测试的 fishgit目录
+
+    版本库（repository）： 工作区有个隐藏目录.git ， 这个不算工作区，而是git 的版本库。
+
+    版本库{
+	    stage（或者叫index）暂存区，
+	    自动创建的第一个分支master，
+	    指向master的指针HEAD
+    }
+
+    我们把文件往git版本库里添加的时候，分两步执行：
+    第一步是用git add把文件添加进去，实际上就是把文件修改添加到暂存区；
+    第二步是git commit提交更改，实际上就是把暂存区的所有内容提交到当前分支。
+
+6.管理修改：
+	git跟踪并管理的时修改，而非文件。
+
+	操作过程：
+		第一次修改 -> git add -> 第二次修改 -> git commit    则把第一次修改提交了，而第二次没有被提交。
+
+		第一次修改 -> git add -> 第二次修改 -> git add -> git commit 把第二次修改提交了。
+
+	小结
+	现在，你又理解了Git是如何跟踪修改的，每次修改，如果不add到暂存区，那就不会加入到commit中。
+
+
+7.撤销修改
+
+  $ git checkout -- readme.txt
+         丢弃工作区的修改。就是撤销readme.txt在工作区的全部修改。这里有两种情况：
+         一种是readme.txt自修改后还没有被放到暂存去，现在，扯下修改就回到和版本库一模一样的状态。
+         一种是readme.txt已经添加到暂存区，又作了修改，现在，撤销修改就回到添加到暂存区后状态。
+
+
+	小结
+
+	场景1：当你改乱了工作区某个文件的内容，想直接丢弃工作区的修改时，用命令git checkout -- file。
+
+	场景2：当你不但改乱了工作区某个文件的内容，还添加到了暂存区时，想丢弃修改，分两步，第一步用命令git reset HEAD file，就回到了场景1，第二步按场景1操作。
+
+	场景3：已经提交了不合适的修改到版本库时，想要撤销本次提交，参考版本回退一节，不过前提是没有推送到远程库。
+
+
+8.删除文件
+
+	$ rm test.txt   --->删除工作区的文件
+	$ git status     ---->检查工作区和版本库是否一致。
+	$ git rm test.txt
+	$ git commit -m "remove test.txt"
+
+	如果在工作区删除错了，则版本库中还有的，恢复到最新版本 
+	$ git checkout -- test.txt
+
+
+	小结
+	命令git rm用于删除一个文件。如果一个文件已经被提交到版本库，那么你永远不用担心误删，但是要小心，你只能恢复文件到最新版本，你会丢失最近一次提交后你修改的内容。
+
+
+9.添加远程库
+	把本地的内容推送到gitHub仓库
+
+	$ git remote add origin git@github.com:Boby-Zhang/gitTest.git
+	$ git push -u origin master    --->第一次推送加上了-u参数，Git不但会把本地的master分支内容推送的远程新的master分支，还会把本地的master分支和远程的master分支关联起来，在以后的推送或者拉取时就可以简化命令。
+
+	以后提交：
+	$ git push origin master
+	小结
+	要关联一个远程库，使用命令git remote add origin git@server-name:path/repo-name.git；
+
+	关联后，使用命令git push -u origin master第一次推送master分支的所有内容；
+
+	此后，每次本地提交后，只要有必要，就可以使用命令git push origin master推送最新修改；
+
+10.从远程库克隆
+	
+	小结
+	要克隆一个仓库，首先必须知道仓库的地址，然后使用git clone命令克隆。
+
+	Git支持多种协议，包括https，但通过ssh支持的原生git协议速度最快。
+
+
+
+11.分支管理
+
+	创建dev分支，然后切换到dev分支：
+	$ git checkout -b dev
+	Switched to a new branch 'dev'
+	git checkout命令加上-b参数表示创建并切换，相当于以下两条命令：
+	$ git branch dev
+	$ git checkout dev
+	Switched to branch 'dev'
+
+
+	$ git branch命令查看当前分支：当前分支前面会标一个*号。
+	$ git branch
+	    * dev
+	     master
+
+	然后，我们就可以在dev分支上正常提交，比如对readme.txt做个修改后，
+	git add readme.txt
+	git commit -m "branch tests"
+
+	dev分支的工作成果合并到master分支上
+	$ git merge dev
+
+	删除dev分支了：
+	$ git branch -d dev
+
+
+	小结
+	Git鼓励大量使用分支：
+
+	查看分支：git branch
+
+	创建分支：git branch <name>
+
+	切换分支：git checkout <name>
+
+	创建+切换分支：git checkout -b <name>
+
+	合并某分支到当前分支：git merge <name>
+
+	删除分支：git branch -d <name>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
